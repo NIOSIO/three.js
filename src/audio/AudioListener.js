@@ -18,6 +18,8 @@ function AudioListener() {
 	this.gain = this.context.createGain();
 	this.gain.connect( this.context.destination );
 
+	this.timeDelta = 0.01;
+
 	this.filter = null;
 
 }
@@ -25,6 +27,14 @@ function AudioListener() {
 AudioListener.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 	constructor: AudioListener,
+
+	isAudioListener: true,
+
+	update: function ( timeDelta ) {
+
+		this.timeDelta = timeDelta;
+
+	},
 
 	getInput: function () {
 
@@ -78,7 +88,7 @@ AudioListener.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 	setMasterVolume: function ( value ) {
 
-		this.gain.gain.value = value;
+		this.gain.gain.setTargetAtTime( value, this.context.currentTime, this.deltaTime );
 
 	},
 

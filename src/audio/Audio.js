@@ -11,6 +11,7 @@ function Audio( listener ) {
 
 	this.type = 'Audio';
 
+	this.listener = listener;
 	this.context = listener.context;
 
 	this.gain = this.context.createGain();
@@ -295,7 +296,7 @@ Audio.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 	setVolume: function ( value ) {
 
-		this.gain.gain.value = value;
+		this.gain.gain.setTargetAtTime( value, this.context.currentTime, this.listener.deltaTime );
 
 		return this;
 

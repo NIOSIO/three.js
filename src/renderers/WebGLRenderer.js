@@ -1,5 +1,6 @@
 import { REVISION, RGBAFormat, HalfFloatType, FloatType, UnsignedByteType, FrontFaceDirectionCW, TriangleFanDrawMode, TriangleStripDrawMode, TrianglesDrawMode, NoColors, LinearToneMapping } from '../constants.js';
 import { _Math } from '../math/Math.js';
+import { Clock } from '../core/Clock.js';
 import { Matrix4 } from '../math/Matrix4.js';
 import { DataTexture } from '../textures/DataTexture.js';
 import { WebGLUniforms } from './webgl/WebGLUniforms.js';
@@ -165,14 +166,17 @@ function WebGLRenderer( parameters ) {
 		},
 
 		_infoRender = {
-
 			frame: 0,
+			frameTime: 0,
 			calls: 0,
 			vertices: 0,
 			faces: 0,
 			points: 0
+		},
 
-		};
+		_audioListener = null,
+
+		_clock = new Clock();
 
 	this.info = {
 
@@ -512,6 +516,16 @@ function WebGLRenderer( parameters ) {
 		renderLists.dispose();
 
 		vr.dispose();
+
+		_audioListener = null;
+
+	};
+
+	//
+
+	this.setAudioListener = function ( audioListener ) {
+
+		_audioListener = audioListener;
 
 	};
 
@@ -1085,6 +1099,15 @@ function WebGLRenderer( parameters ) {
 
 		if ( _isContextLost ) return;
 
+		//
+
+		_infoRender.frame ++;
+		_infoRender.frameTime = _clock.getDelta();
+		_infoRender.calls = 0;
+		_infoRender.vertices = 0;
+		_infoRender.faces = 0;
+		_infoRender.points = 0;
+
 		// reset caching for this frame
 
 		_currentGeometryProgram = '';
@@ -1130,6 +1153,14 @@ function WebGLRenderer( parameters ) {
 
 		//
 
+		if ( _audioListener !== null ) {
+
+			_audioListener.update( _infoRender.frameTime );
+
+		}
+
+		//
+
 		textures.updateVideoTextures();
 
 		//
@@ -1143,12 +1174,6 @@ function WebGLRenderer( parameters ) {
 		if ( _clippingEnabled ) _clipping.endShadows();
 
 		//
-
-		_infoRender.frame ++;
-		_infoRender.calls = 0;
-		_infoRender.vertices = 0;
-		_infoRender.faces = 0;
-		_infoRender.points = 0;
 
 		if ( renderTarget === undefined ) {
 
