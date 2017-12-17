@@ -19,7 +19,6 @@ function AudioListener() {
 	this.gain = this.context.createGain();
 	this.gain.connect( this.context.destination );
 
-	this.clock = new Clock();
 	this.timeDelta = 0.01;
 
 	this.filter = null;
@@ -30,11 +29,17 @@ AudioListener.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 	constructor: AudioListener,
 
-	update: function () {
+	update: ( function () {
 
-		this.timeDelta = this.clock();
+		var clock = new Clock();
 
-	},
+		return function update() {
+
+			this.timeDelta = clock.getDelta();
+
+		};
+
+	} )(),
 
 	getInput: function () {
 
