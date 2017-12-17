@@ -5,6 +5,7 @@
 import { Vector3 } from '../math/Vector3.js';
 import { Quaternion } from '../math/Quaternion.js';
 import { Object3D } from '../core/Object3D.js';
+import { Clock } from '../core/Clock.js';
 import { AudioContext } from './AudioContext.js';
 
 function AudioListener() {
@@ -18,6 +19,7 @@ function AudioListener() {
 	this.gain = this.context.createGain();
 	this.gain.connect( this.context.destination );
 
+	this.clock = new Clock();
 	this.timeDelta = 0.01;
 
 	this.filter = null;
@@ -28,11 +30,9 @@ AudioListener.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 	constructor: AudioListener,
 
-	isAudioListener: true,
+	update: function () {
 
-	update: function ( timeDelta ) {
-
-		this.timeDelta = timeDelta;
+		this.timeDelta = this.clock();
 
 	},
 
