@@ -116,7 +116,32 @@ ShaderMaterial.prototype.toJSON = function ( meta ) {
 
 	var data = Material.prototype.toJSON.call( this, meta );
 
-	data.uniforms = this.uniforms;
+	data.uniforms = {};
+
+	for ( var name in this.uniforms ) {
+
+		var uniform = this.uniforms[ name ];
+
+		if ( uniform.type === 't' && uniform.value.isTexture ) {
+
+			var texture = uniform.value;
+
+			data.uniforms[ name ] = {
+				type: uniform.type,
+				value: texture.toJSON( meta ).uuid
+			};
+
+		} else {
+
+			data.uniforms[ name ] = {
+				type: uniform.type,
+				value: uniform.value
+			};
+
+		}
+
+	}
+
 	data.vertexShader = this.vertexShader;
 	data.fragmentShader = this.fragmentShader;
 
